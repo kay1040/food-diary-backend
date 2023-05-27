@@ -4,61 +4,54 @@ const User = require('../models/User')
 require('dotenv').config()
 
 const signup = async (req, res) => {
-    const { email, password } = req.body
-
+    const { email, password } = req.body;
+  
     if (!email || !password) {
-        res.status(400).json({
-            message: 'Email and password are required.'
-        })
-        return
+      res.status(400).json({
+        message: 'Email and password are required.',
+      });
+      return;
     }
-
-    let existingUser
-
+  
     try {
-        existingUser = await User.findOne({ email })
-
-    } catch (error) {
-        res.status(500).json({
-            message: 'An error occurred.'
-        })
-    }
-
-    if (existingUser) {
+      let existingUser = await User.findOne({ email });
+  
+      if (existingUser) {
         res.status(409).json({
-            message: 'User already exists.'
-        })
-        return
-    }
-
-    let hashedPassword
-
-    try {
-        hashedPassword = await bcrypt.hash(password, 10)
-    } catch (error) {
-        res.status(500).json({
-            message: 'An error occurred.'
-        })
-    }
-
-    const user = new User({
+          message: 'User already exists.',
+        });
+        return;
+      }
+  
+      let hashedPassword;
+  
+      try {
+        hashedPassword = await bcrypt.hash(password, 10);
+      } catch (error) {
+        throw new Error('Password hashing error.');
+      }
+  
+      const user = new User({
         email,
         password: hashedPassword,
-    });
-
-    try {
+      });
+  
+      try {
         await user.save();
-
+      } catch (error) {
+        throw new Error('User save error.');
+      }
+  
+      res.json({
+        message: 'User added successfully!',
+      });
     } catch (error) {
-        res.status(500).json({
-            message: 'An error occurred.'
-        })
+      res.status(500).json({
+        message: 'An error occurred.',
+      });
     }
-
-    res.json({
-        message: 'User added successfully!'
-    })
-}
+  };
+  
 
 // const signup = async (req, res) => {
 //     const { email, password } = req.body
