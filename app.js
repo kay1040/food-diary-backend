@@ -31,7 +31,13 @@ app.listen(3000, () => {
 })
 
 const userRoute = require('./routes/user')
-const foodRecordRoute = require('./routes/food')
+const foodRecordRoute = require('./routes/food');
 
 app.use('/api/user', userRoute)
 app.use('/api/food', foodRecordRoute)
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Promise Rejection:')
+    console.error(reason)
+    process.exit(1)
+})
