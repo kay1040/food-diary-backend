@@ -112,30 +112,38 @@ const login = async (req, res) => {
     try {
         const user = await User.findOne({ email }).exec()
         if (user) {
-            const isPasswordMatched = await bcrypt.compare(password, user.password)
+            try {
+                const isPasswordMatched = await bcrypt.compare(password, user.password)
 
-            if (isPasswordMatched) {
-                const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY, { expiresIn: '3h' })
-                res.json({
-                    message: 'Login Successful!',
-                    userId: user._id.toString(),
-                    token
-                });
-            } else {
-                res.status(401).json({
-                    message: 'Invalid credentials.'
-                });
+                if (isPasswordMatched) {
+                    const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY, { expiresIn: '3h' })
+                    res.json({
+                        message: 'Login Successful!',
+                        userId: user._id.toString(),
+                        token
+                    })
+                } else {
+                    res.status(401).json({
+                        message: 'Invalid credentials.'
+                    })
+                }
+            } catch (error) {
+                res.status(500).json({
+                    message: 'An error occurred.',
+                    error: error.message
+                })
             }
+
         } else {
             res.status(404).json({
                 message: 'No user found.'
-            });
+            })
         }
     } catch (error) {
         res.status(500).json({
             message: 'An error occurred.',
             error: error.message
-        });
+        })
     }
 }
 
