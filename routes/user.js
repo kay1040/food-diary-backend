@@ -3,14 +3,14 @@ const router = express.Router()
 const user = require('../controllers/user')
 const authenticate = require('../middlewares/authenticate')
 
-const { signup, login, updatePasswrod, addUserInfo, getUserById, updateUserInfoById } = user
+const { signup, login, updatePassword, addUserInfo, getUserById, updateUserInfoById } = user
 
 router.post('/signup', signup)
 router.post('/login', login)
 
-router.use(authenticate)
+// router.use(authenticate)
 
-router.put('/password', updatePasswrod)
+router.put('/password', updatePassword)
 router.post('/', addUserInfo)
 router.get('/:userId', getUserById)
 router.put('/:userId', updateUserInfoById)

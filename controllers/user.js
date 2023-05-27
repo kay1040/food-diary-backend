@@ -1,96 +1,46 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const User = require('../models/User')
+const User = require('../models/User');
 require('dotenv').config()
 
 const signup = async (req, res) => {
-    const { email, password } = req.body;
-  
+    const { email, password } = req.body
+
     if (!email || !password) {
-      res.status(400).json({
-        message: 'Email and password are required.',
-      });
-      return;
+        res.status(400).json({
+            message: 'Email and password are required.'
+        })
+        return
     }
-  
+
     try {
-      let existingUser = await User.findOne({ email });
-  
-      if (existingUser) {
-        res.status(409).json({
-          message: 'User already exists.',
+        const existingUser = await User.findOne({ email })
+
+        if (existingUser) {
+            res.status(409).json({
+                message: 'User already exists.'
+            })
+            return
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10)
+
+        const user = new User({
+            email,
+            password: hashedPassword,
         });
-        return;
-      }
-  
-      let hashedPassword;
-  
-      try {
-        hashedPassword = await bcrypt.hash(password, 10);
-      } catch (error) {
-        throw new Error('Password hashing error.');
-      }
-  
-      const user = new User({
-        email,
-        password: hashedPassword,
-      });
-  
-      try {
+
         await user.save();
-      } catch (error) {
-        throw new Error('User save error.');
-      }
-  
-      res.json({
-        message: 'User added successfully!',
-      });
+
+        res.json({
+            message: 'User added successfully!'
+        })
     } catch (error) {
-      res.status(500).json({
-        message: 'An error occurred.',
-      });
+        res.status(500).json({
+            message: 'An error occurred.'
+        })
     }
-  };
-  
-
-// const signup = async (req, res) => {
-//     const { email, password } = req.body
-
-//     if (!email || !password) {
-//         res.status(400).json({
-//             message: 'Email and password are required.'
-//         })
-//         return
-//     }
-
-//     try {
-//         const existingUser = await User.findOne({ email })
-
-//         if (existingUser) {
-//             res.status(409).json({
-//                 message: 'User already exists.'
-//             })
-//             return
-//         }
-
-//         const hashedPassword = await bcrypt.hash(password, 10)
-
-//         const user = new User({
-//             email,
-//             password: hashedPassword,
-//         });
-
-//         await user.save();
-
-//         res.json({
-//             message: 'User added successfully!'
-//         })
-//     } catch (error) {
-//         res.status(500).json({
-//             message: 'An error occurred.'
-//         })
-//     }
-// }
+}
 
 const login = async (req, res) => {
     const { email, password } = req.body
@@ -140,7 +90,7 @@ const login = async (req, res) => {
     }
 }
 
-const updatePasswrod = async (req, res) => {
+const updatePassword = async (req, res) => {
     try {
         const { userId, currentPassword, newPassword } = req.body
 
@@ -171,6 +121,7 @@ const updatePasswrod = async (req, res) => {
 const addUserInfo = async (req, res) => {
     try {
         const { userId, gender, age, height, weight, activityLevel } = req.body
+        console.log(userId, gender, age, height, weight, activityLevel);
         const user = await User.findById(userId)
 
         if (!user) {
@@ -212,7 +163,7 @@ const updateUserInfoById = async (req, res) => {
     try {
         const { userId } = req.params
         const { gender, age, height, weight, activityLevel } = req.body
-
+        console.log(gender, age, height, weight, activityLevel);
         const user = await User.findByIdAndUpdate(userId, {
             userInfo: {
                 gender,
@@ -232,7 +183,7 @@ const updateUserInfoById = async (req, res) => {
 module.exports = {
     signup,
     login,
-    updatePasswrod,
+    updatePassword,
     addUserInfo,
     getUserById,
     updateUserInfoById
