@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 
+mongoose.set('strictQuery', false);
 mongoose.connect('mongodb://localhost:27017/my-db')
 
 const db = mongoose.connection
@@ -33,3 +34,10 @@ const foodRecordRoute = require('./routes/food')
 
 app.use('/api/user', userRoute)
 app.use('/api/food', foodRecordRoute)
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Promise Rejection:')
+    console.error(reason)
+    process.exit(1)
+  });
+  
