@@ -8,7 +8,7 @@ const { signup, login, updatePassword, addUserInfo, getUserById, updateUserInfoB
 router.post('/signup', signup)
 router.post('/login', login)
 
-// router.use(authenticate)
+router.use(authenticate)
 
 router.put('/password', updatePassword)
 router.post('/', addUserInfo)
