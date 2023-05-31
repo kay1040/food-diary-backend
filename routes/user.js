@@ -15,5 +15,4 @@ router.post('/', addUserInfo)
 router.get('/:userId', getUserById)
 router.put('/:userId', updateUserInfoById)
 
-
 module.exports = router

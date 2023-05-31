@@ -50,25 +50,28 @@ const updateFoodRecordByRecordId = async (req, res) => {
 
 const getFoodRecordsByUserId = async (req, res) => {
     try {
-      const { userId, year, month } = req.params
-      const user = await User.findById(userId)
-      if (!user) {
-        return res.status(404).json({ message: 'User not found.' })
-      }
+        const { userId, year, month } = req.params
+        const user = await User.findById(userId)
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' })
+        }
 
-      const startDate = new Date(year, month - 1, 1)
-      const endDate = new Date(year, month, 0)
-      
-      const foodRecords = await FoodRecord.find({
-        userId,
-        date: { $gte: startDate, $lt: endDate }
-      });
-  
-      res.status(200).json({ foodRecords })
+        const startDate = new Date(year, month - 1, 1)
+        const endDate = new Date(year, month, 1)
+
+        endDate.setHours(endDate.getHours() - 1)
+
+        const foodRecords = await FoodRecord.find({
+            userId,
+            date: { $gte: startDate, $lte: endDate }
+        });
+
+        res.status(200).json({ foodRecords })
     } catch (error) {
-      res.status(500).json({ message: 'An error occurred.', error: error.message })
+        res.status(500).json({ message: 'An error occurred.', error: error.message })
     }
-  }
+}
+
 
 module.exports = {
     addFoodRecord,
